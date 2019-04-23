@@ -4,9 +4,15 @@ namespace TeensyHIDTest
 {
 	class Program
 	{
+		private static TeensyConnection _teensyConnection = new TeensyConnection();
+
 		static void Main(string[] args)
 		{
-			Console.WriteLine("Hello World!");
+			while (true)
+			{
+				_teensyConnection.InitializeTeensyAsync();
+				Console.ReadLine();
+			}
 		}
 	}
 }

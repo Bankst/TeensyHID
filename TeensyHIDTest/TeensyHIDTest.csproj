@@ -5,4 +5,11 @@
     <TargetFramework>netcoreapp2.1</TargetFramework>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Device.Net" Version="2.7.0" />
+    <PackageReference Include="Device.Net.LibUsb" Version="2.7.0" />
+    <PackageReference Include="Hid.Net" Version="2.7.0" />
+    <PackageReference Include="Usb.Net" Version="2.7.0" />
+  </ItemGroup>
+
 </Project>
