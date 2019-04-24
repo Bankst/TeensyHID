@@ -2,15 +2,17 @@
 
 namespace TeensyHIDTest
 {
-	class Program
+	internal class Program
 	{
-		private static TeensyConnection _teensyConnection = new TeensyConnection();
+		private static readonly TeensyConnection _teensyConnection = new TeensyConnection();
 
-		static void Main(string[] args)
+		private static void Main(string[] args)
 		{
 			while (true)
 			{
-				_teensyConnection.InitializeTeensyAsync();
+				_teensyConnection.GetDevices();
+				// _teensyConnection.StartListening();
+				// _teensyConnection.InitializeTeensyAsync();
 				Console.ReadLine();
 			}
 		}
