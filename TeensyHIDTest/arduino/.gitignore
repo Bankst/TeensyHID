@@ -1,0 +1,9 @@
+.vsteensy/build/**
+lib/**/examples
+lib/**/stylesheets
+lib/**/docs
+lib/**/extras
+lib/**/*.html
+lib/**/*.json
+lib/**/*.txt
+lib/**/*.properties

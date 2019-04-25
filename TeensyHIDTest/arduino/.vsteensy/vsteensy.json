@@ -1,0 +1,58 @@
+{
+  "version": "1",
+  "target": "vsCode",
+  "buildSystem": "makefile",
+  "configurations": [
+    {
+      "name": "default",
+      "guid": "31c6b522-b4c4-48fc-a783-15d03d764579",
+      "setupType": "quick",
+      "boardTxtPath": "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr\\boards.txt",
+      "coreBase": "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr\\cores\\teensy3",
+      "compilerBase": "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\arm",
+      "makefileExtension": null,
+      "copyBoardTxt": false,
+      "copyCore": false,
+      "sharedLibraries": [],
+      "localLibraries": [
+        "ADC",
+        "FastLED",
+        "SD",
+        "TeensyThreads",
+        "USBHost_t36",
+        "SPI"
+      ],
+      "board": {
+        "name": "Teensy 3.6",
+        "options": {
+          "USB Type": "Raw HID",
+          "CPU Speed": "180 MHz",
+          "Optimize": "Faster",
+          "Keyboard Layout": "US English"
+        }
+      }
+    },
+    {
+      "name": "Testdummy",
+      "guid": "78c23f0b-8fd2-4fb9-a3f5-edf307632685",
+      "setupType": "quick",
+      "boardTxtPath": "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr\\boards.txt",
+      "coreBase": "C:\\Program Files (x86)\\Arduino\\hardware\\teensy\\avr\\cores\\teensy3",
+      "compilerBase": "C:\\Program Files (x86)\\Arduino\\hardware\\tools\\arm",
+      "makefileExtension": null,
+      "copyBoardTxt": false,
+      "copyCore": false,
+      "sharedLibraries": [],
+      "localLibraries": [],
+      "board": {
+        "name": "Teensy 3.6",
+        "options": {
+          "USB Type": "Serial",
+          "CPU Speed": "180 MHz",
+          "Optimize": "Faster",
+          "Keyboard Layout": "US English"
+        }
+      }
+    }
+  ]
+}
