@@ -8,12 +8,17 @@ namespace TeensyHIDTest
 
 		private static void Main(string[] args)
 		{
+			_teensyConnection.StartListening();
+
 			while (true)
 			{
-				_teensyConnection.GetDevices();
-				// _teensyConnection.StartListening();
-				// _teensyConnection.InitializeTeensyAsync();
+				if (_teensyConnection.TeensyDevice == null || !_teensyConnection.TeensyDevice.IsInitialized) continue;
+
 				Console.ReadLine();
+
+				var initPacket = new TeensyPacket(TeensyOpcode.HEARTBEAT, "Hello World!");
+
+				var responsePacket = _teensyConnection.WriteThenReadAsync(initPacket);
 			}
 		}
 	}

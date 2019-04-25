@@ -5,8 +5,8 @@ namespace TeensyHIDTest
 {
 	public class TeensyPacket
 	{
-		private readonly byte[] _buffer = new byte[64];
-		private byte[] _dataBytes = new byte[63];
+		private readonly byte[] _dataBytes = new byte[63];
+		public bool IsRx { get; }
 
 		public TeensyOpcode Opcode { get; }
 
@@ -14,17 +14,19 @@ namespace TeensyHIDTest
 		{
 			Opcode = opcode;
 			_dataBytes = data;
+			IsRx = false;
 
-			_buffer[0] = (byte) Opcode; // set first byte to opcode
+			ByteArray[0] = (byte) Opcode; // set first byte to opcode
 			Array.Resize(ref _dataBytes, 63); // ensure data is only 63 bytes
 
-			_buffer.CopyTo(_dataBytes, 1); // copy data to buffer
+			_dataBytes.CopyTo(ByteArray, 1); // copy data to buffer
 		}
 
 		public TeensyPacket(TeensyOpcode opcode, string data) : this(opcode, Encoding.ASCII.GetBytes(data)) { }
 
 		public TeensyPacket(byte[] rawData)
 		{
+			IsRx = true;
 			if (rawData.Length != 64)
 			{
 				return;
@@ -34,7 +36,16 @@ namespace TeensyHIDTest
 			Buffer.BlockCopy(rawData, 1, _dataBytes, 0, 63);
 		}
 
+		public byte[] RawData => _dataBytes;
 
-		public byte[] GetByteArray() => _buffer;
+		public string DataString => Encoding.ASCII.GetString(RawData);
+
+		public byte[] ByteArray { get; } = new byte[64];
+
+		public override string ToString()
+		{
+			var rxStr = IsRx ? "RX" : "TX";
+			return $"TeensyHID {rxStr} - Opcode: {Opcode}, Data: {DataString}";
+		}
 	}
 }
