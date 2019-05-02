@@ -8,14 +8,14 @@
 class HIDPacket {
 	public:
 		HIDPacket();
-        HIDPacket(const HIDPacket& p);
 		HIDPacket(byte rawdata[]);
 		HIDPacket(HIDOpcode opcode, byte newdata[]);
 		HIDPacket(HIDOpcode opcode, const char* newdata) : HIDPacket(opcode, (unsigned char*)newdata) {};
 
-		~HIDPacket();
+		HIDPacket& operator= (const HIDPacket& p);
+		operator unsigned char*();
 
-		HIDOpcode getOpcode();
+		HIDOpcode const getOpcode();
 		const char* getOpcodeName();
 		char* getData();
 		byte* getBuffer();
