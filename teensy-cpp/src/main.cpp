@@ -3,9 +3,13 @@
 
 #include "ardprintf.h"
 
+#include "Color.h"
+
 #include "HID\HIDOpcode.h"
 #include "HID\HIDPacket.h"
 #include "HID\HIDHandler.h"
+
+#include "RGBLed.h"
 
 #include "version_num.h"
 #include "build_defs.h"
@@ -18,29 +22,35 @@
 #define STATUS_LED LED_BUILTIN
 #define RX_LED 0
 
+#define RGB_RED_PIN 23
+#define RGB_GREEN_PIN 22
+#define RGB_BLUE_PIN 21
+
 const unsigned char completeVersion[] =
 {
 	'V',
-    VERSION_MAJOR_INIT,
-    '.',
-    VERSION_MINOR_INIT,
-    '-',
-    BUILD_YEAR_CH0, BUILD_YEAR_CH1, BUILD_YEAR_CH2, BUILD_YEAR_CH3,
-    '-',
-    BUILD_MONTH_CH0, BUILD_MONTH_CH1,
-    '-',
-    BUILD_DAY_CH0, BUILD_DAY_CH1,
-    '-',
-    BUILD_HOUR_CH0, BUILD_HOUR_CH1,
-    ':',
-    BUILD_MIN_CH0, BUILD_MIN_CH1,
-    ':',
-    BUILD_SEC_CH0, BUILD_SEC_CH1,
-    '\0'
+	VERSION_MAJOR_INIT,
+	'.',
+	VERSION_MINOR_INIT,
+	'-',
+	BUILD_YEAR_CH0, BUILD_YEAR_CH1, BUILD_YEAR_CH2, BUILD_YEAR_CH3,
+	'-',
+	BUILD_MONTH_CH0, BUILD_MONTH_CH1,
+	'-',
+	BUILD_DAY_CH0, BUILD_DAY_CH1,
+	'-',
+	BUILD_HOUR_CH0, BUILD_HOUR_CH1,
+	':',
+	BUILD_MIN_CH0, BUILD_MIN_CH1,
+	':',
+	BUILD_SEC_CH0, BUILD_SEC_CH1,
+	'\0'
 };
 
 HIDPacket lastRXPacket;
 HIDPacket lastTXPacket;
+
+RGBLed rgbLed(RGB_RED_PIN, RGB_BLUE_PIN, RGB_GREEN_PIN);
 
 volatile bool isRx = false;
 
@@ -128,10 +138,14 @@ void setup()
 
 	ledOn(RX_LED);
 	ledOn(STATUS_LED);
+	rgbLed.setColor(Color::white());
+	
 
 	Serial.begin(115200);
 	delay(500);
 	ardprintf("TeensyHID %s", completeVersion);
+
+	rgbLed.off();
 
 	threads.addThread(statusThread);
 	threads.addThread(hidThread);

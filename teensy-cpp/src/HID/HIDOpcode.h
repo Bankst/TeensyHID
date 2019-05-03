@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-static const char* const HIDOpcodeNames[] = {"INVALID", "OK", "FAIL", "INIT", "INIT_OK", "HEARTBEAT", "HEARTBEAT_OK" };
+static const char* const HIDOpcodeNames[] = {"OK", "FAIL", "INIT", "INIT_OK", "HEARTBEAT", "HEARTBEAT_OK" };
 
 enum HIDOpcode : byte {
 	OK,
