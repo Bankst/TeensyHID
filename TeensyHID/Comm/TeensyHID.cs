@@ -35,6 +35,8 @@ namespace TeensyHID
 
 		public bool IsConnected => _teensyHID.IsConnected;
 
+        public string Serial => _teensyHID.Serial;
+
 		public void SendData(byte[] buffer)
 		{
 			var report = _teensyHID.CreateReport();
@@ -55,7 +57,9 @@ namespace TeensyHID
 			Removed?.Invoke();
 		}
 
-		public void Dispose()
+        public override string ToString() => _teensyHID.ToString();
+
+        public void Dispose()
 		{
 			_teensyHID.CloseDevice();
 			GC.SuppressFinalize(this);

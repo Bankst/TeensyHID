@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Diagnostics.CodeAnalysis;
+using System.Linq;
 using System.Runtime.InteropServices;
-using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -33,7 +33,6 @@ namespace TeensyHID.HID
 
 			DevicePath = devicePath;
 			Description = description;
-			Serial = ReadSerialNumber(out var serialBytes) ? Encoding.ASCII.GetString(serialBytes) : null;
 
 			try
 			{
@@ -48,7 +47,9 @@ namespace TeensyHID.HID
 			{
 				throw new Exception($"Error querying HID device '{devicePath}'.", exception);
 			}
-		}
+
+            Serial = ReadSerialNumber(out var serialBytes) ? DecByteArrayToString(serialBytes) : "Unknown";
+        }
 
 		public IntPtr Handle { get; private set; }
 		public bool IsOpen { get; private set; }
@@ -72,7 +73,7 @@ namespace TeensyHID.HID
 		public override string ToString()
 		{
 			return
-				$"VendorID={Attributes.VendorHexId}, ProductID={Attributes.ProductHexId}, Version={Attributes.Version}, DevicePath={DevicePath}";
+				$"VendorID={Attributes.VendorHexId}, ProductID={Attributes.ProductHexId}, Serial={Serial}";
 		}
 
 		public void OpenDevice()
@@ -100,9 +101,8 @@ namespace TeensyHID.HID
 
 			IsOpen = Handle.ToInt32() != NativeMethods.INVALID_HANDLE_VALUE;
 		}
-
-
-		public void CloseDevice()
+        
+        public void CloseDevice()
 		{
 			if (!IsOpen) return;
 			CloseDeviceIO(Handle);
@@ -233,6 +233,11 @@ namespace TeensyHID.HID
 
 			return success;
 		}
+
+        private static string DecByteArrayToString(byte[] data)
+        {
+            return new string(data.Where(b => b != 0).Select(Convert.ToChar).ToArray());
+        }
 
 		public bool ReadProduct(out byte[] data)
 		{

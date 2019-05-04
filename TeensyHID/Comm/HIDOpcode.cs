@@ -5,11 +5,11 @@
         OK,
         FAIL,
         INIT,
-        INIT_OK,
+        INIT_ACK,
         HEARTBEAT,
-        HEARTBEAT_OK,
+        HEARTBEAT_ACK,
         LOOP_DATA,
-        LOOP_DATA_OK,
+        LOOP_DATA_ACK,
 
     }
 }

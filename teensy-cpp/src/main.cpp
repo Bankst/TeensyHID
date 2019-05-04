@@ -1,18 +1,16 @@
 #include <Arduino.h>
-#include "TeensyThreads.h"
+#include <TeensyThreads.h>
 
 #include "ardprintf.h"
-
+#include "build_defs.h"
 #include "Color.h"
-
 #include "HID\HIDOpcode.h"
 #include "HID\HIDPacket.h"
 #include "HID\HIDHandler.h"
-
+#include "model.h"
 #include "RGBLed.h"
-
 #include "version_num.h"
-#include "build_defs.h"
+
 
 #define STATUS_BLINK_MS 60
 #define STATUS_DELAY_BLINK_MS 1000
