@@ -4,8 +4,8 @@ using System.Threading.Tasks;
 
 namespace TeensyHID.HID
 {
-	public delegate void InsertedEventHandler();
-	public delegate void RemovedEventHandler();
+	public delegate void InsertedEventHandler(IHidDevice device);
+	public delegate void RemovedEventHandler(IHidDevice device);
 	
 	public enum DeviceMode
 	{

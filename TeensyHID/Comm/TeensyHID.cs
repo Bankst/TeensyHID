@@ -9,12 +9,12 @@ namespace TeensyHID
 		public const int ProductId = 0x0486;
 		public const ushort UsagePage = 0x0200;
 
-		public event InsertedEventHandler Inserted;
-		public event RemovedEventHandler Removed;
-		public event DataReceivedEventHandler DataReceived;
+		public static event InsertedEventHandler Inserted;
+		public static event RemovedEventHandler Removed;
+		public static event DataReceivedEventHandler DataReceived;
 
-		public delegate void InsertedEventHandler();
-		public delegate void RemovedEventHandler();
+		public delegate void InsertedEventHandler(HidDevice device);
+		public delegate void RemovedEventHandler(HidDevice device);
 		public delegate void DataReceivedEventHandler(byte[] data);
 
 		private readonly HidDevice _teensyHID;
@@ -47,14 +47,14 @@ namespace TeensyHID
 			_teensyHID.WriteReport(report);
 		}
 
-		private void TeensyHID_Inserted()
+		private static void TeensyHID_Inserted(IHidDevice hidDevice)
 		{
-			Inserted?.Invoke();
+			Inserted?.Invoke((HidDevice)hidDevice);
 		}
 
-		private void TeensyHID_Removed()
+		private static void TeensyHID_Removed(IHidDevice hidDevice)
 		{
-			Removed?.Invoke();
+			Removed?.Invoke((HidDevice)hidDevice);
 		}
 
         public override string ToString() => _teensyHID.ToString();

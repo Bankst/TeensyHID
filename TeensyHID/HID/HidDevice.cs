@@ -116,20 +116,17 @@ namespace TeensyHID.HID
 
 		public HidDeviceData Read(int timeout)
 		{
-			if (IsConnected)
-			{
-				if (IsOpen == false) OpenDevice(_deviceReadMode, _deviceWriteMode, _deviceShareMode);
-				try
-				{
-					return ReadData(timeout);
-				}
-				catch
-				{
-					return new HidDeviceData(HidDeviceData.ReadStatus.ReadError);
-				}
+			if (!IsConnected) return new HidDeviceData(HidDeviceData.ReadStatus.NotConnected);
 
+			if (IsOpen == false) OpenDevice(_deviceReadMode, _deviceWriteMode, _deviceShareMode);
+			try
+			{
+				return ReadData(timeout);
 			}
-			return new HidDeviceData(HidDeviceData.ReadStatus.NotConnected);
+			catch
+			{
+				return new HidDeviceData(HidDeviceData.ReadStatus.ReadError);
+			}
 		}
 
 		public void Read(ReadCallback callback)
@@ -345,7 +342,8 @@ namespace TeensyHID.HID
 
 		public async Task<bool> WriteAsync(byte[] data, int timeout = 0)
 		{
-			var writeDelegate = new WriteDelegate(Write);return await Task<bool>.Factory.FromAsync(writeDelegate.BeginInvoke, writeDelegate.EndInvoke, data, timeout, null);
+			var writeDelegate = new WriteDelegate(Write);
+			return await Task<bool>.Factory.FromAsync(writeDelegate.BeginInvoke, writeDelegate.EndInvoke, data, timeout, null);
 		}
 
 		public bool WriteReport(HidReport report)
@@ -379,14 +377,11 @@ namespace TeensyHID.HID
 		/// 
 		public bool WriteReportSync(HidReport report)
 		{
-
-			if (null != report)
-			{
-				var buffer = report.GetBytes();
-				return (NativeMethods.HidD_SetOutputReport(Handle, buffer, buffer.Length));
-			}
-			else
+			if (null == report)
 				throw new ArgumentException("The output report is null, it must be allocated before you call this method", nameof(report));
+			var buffer = report.GetBytes();
+			return (NativeMethods.HidD_SetOutputReport(Handle, buffer, buffer.Length));
+
 		}
 
 		public async Task<bool> WriteReportAsync(HidReport report, int timeout = 0)
@@ -505,11 +500,10 @@ namespace TeensyHID.HID
 			var capabilities = default(NativeMethods.HIDP_CAPS);
 			var preparsedDataPointer = default(IntPtr);
 
-			if (NativeMethods.HidD_GetPreparsedData(hidHandle, ref preparsedDataPointer))
-			{
-				NativeMethods.HidP_GetCaps(preparsedDataPointer, ref capabilities);
-				NativeMethods.HidD_FreePreparsedData(preparsedDataPointer);
-			}
+			if (!NativeMethods.HidD_GetPreparsedData(hidHandle, ref preparsedDataPointer))
+				return new HidDeviceCapabilities(capabilities);
+			NativeMethods.HidP_GetCaps(preparsedDataPointer, ref capabilities);
+			NativeMethods.HidD_FreePreparsedData(preparsedDataPointer);
 			return new HidDeviceCapabilities(capabilities);
 		}
 
@@ -557,15 +551,13 @@ namespace TeensyHID.HID
 						return false;
 				}
 			}
-			else
+
+			try
 			{
-				try
-				{
-					var overlapped = new NativeOverlapped();
-					return NativeMethods.WriteFile(Handle, buffer, (uint)buffer.Length, out _, ref overlapped);
-				}
-				catch { return false; }
+				var overlapped = new NativeOverlapped();
+				return NativeMethods.WriteFile(Handle, buffer, (uint)buffer.Length, out _, ref overlapped);
 			}
+			catch { return false; }
 		}
 
 		protected HidDeviceData ReadData(int timeout)
@@ -678,16 +670,16 @@ namespace TeensyHID.HID
 			NativeMethods.CloseHandle(handle);
 		}
 
-		private void DeviceEventMonitorInserted()
+		private void DeviceEventMonitorInserted(HidDevice device)
 		{
 			if (!IsOpen) OpenDevice(_deviceReadMode, _deviceWriteMode, _deviceShareMode);
-			Inserted?.Invoke();
+			Inserted?.Invoke(device);
 		}
 
-		private void DeviceEventMonitorRemoved()
+		private void DeviceEventMonitorRemoved(HidDevice device)
 		{
 			if (IsOpen) CloseDevice();
-			Removed?.Invoke();
+			Removed?.Invoke(device);
 		}
 
 		public void Dispose()
