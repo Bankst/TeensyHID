@@ -1,4 +1,7 @@
 #include "HIDManager.h"
+#include "MSG\MSG_INIT.h"
+#include "MSG\MSG_INIT_OK.h"
+#include "MSG\MSG_HEARTBEAT_OK.h"
 
 HIDManager::HIDReceive HIDManager::receive(HIDPacket& packet, int timeout)
 {
@@ -19,7 +22,11 @@ int HIDManager::send(HIDPacket& packet, int timeout)
 }
 
 void HIDManager::handle(HIDPacket& packet) {
-	switch(packet.getOpcode) {
-		
+	switch((unsigned char)(packet.getOpcode())) {
+		case HIDOpcode::INIT:
+			// MSG_INIT message = packet.getData();
+			Serial.println("got INIT");
+			break;
 	}
+	packet = HIDPacket();
 }

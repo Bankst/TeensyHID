@@ -15,10 +15,6 @@ namespace TeensyHID
 		{
             HIDMessageHandler.Store(HIDOpcode.INIT_ACK, HIDHandlers.INIT_ACK);
 
-            // HIDDetection.InsertEvent += HIDDetection_InsertEvent;
-            // HIDDetection.DetachEvent += HIDDetection_DetachEvent;
-            // HIDDetection.StartDeviceDetection();
-
             Debug.Log("~~~~TeensyHID Monitor~~~~");
 
 			var detectedDevices = EnumerateTeensyHIDDevices();

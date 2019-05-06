@@ -6,7 +6,7 @@
 #include "Color.h"
 #include "HID\HIDOpcode.h"
 #include "HID\HIDPacket.h"
-#include "HID\HIDHandler.h"
+#include "HID\HIDManager.h"
 #include "model.h"
 #include "RGBLed.h"
 #include "version_num.h"
@@ -78,16 +78,19 @@ void hidThread()
 {
 	while (1)
 	{
-		HIDHandler::HIDReceive rx = HIDHandler::receive(lastRXPacket, 0);
+		HIDManager::HIDReceive rx = HIDManager::receive(lastRXPacket, 0);
 		isRx = rx.len > 0;
-		if (isRx) { printRXPacket(rx.valid); }
-
-		if (rx.valid)
-		{			
-			HIDOpcode newOpcode = static_cast<HIDOpcode>(lastRXPacket.getOpcode() + 1);
-			lastTXPacket = HIDPacket(newOpcode, "Hello World!");
-			n = HIDHandler::send(lastTXPacket, 100);
+		if (isRx) {
+			printRXPacket(rx.valid);
+			Serial.println("Got valid packet!");
 		}
+		HIDManager::handle(lastRXPacket);
+		// if (rx.valid)
+		// {			
+		// 	HIDOpcode newOpcode = static_cast<HIDOpcode>(lastRXPacket.getOpcode() + 1);
+		// 	lastTXPacket = HIDPacket(newOpcode, "Hello World!");
+		// 	n = HIDManager::send(lastTXPacket, 100);
+		// }
 		threads.yield();
 	}
 }
