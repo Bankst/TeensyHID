@@ -17,3 +17,9 @@ int HIDManager::send(HIDPacket& packet, int timeout)
 {
 	return RawHID.send(packet, timeout);
 }
+
+void HIDManager::handle(HIDPacket& packet) {
+	switch(packet.getOpcode) {
+		
+	}
+}

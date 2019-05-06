@@ -13,6 +13,7 @@ class HIDManager
 		};
 		static HIDManager::HIDReceive receive(HIDPacket& packet, int timeout);
 		static int send(HIDPacket& packet, int timeout);
+		static void handle(HIDPacket& packet);
 	private:
 		HIDManager() {}
 };
