@@ -3,7 +3,7 @@
 
 #include <Arduino.h>
 
-class HIDHandler
+class HIDManager
 {
   public:
 		struct HIDReceive {
@@ -11,8 +11,8 @@ class HIDHandler
 			bool valid;
 			int len;
 		};
-		static HIDHandler::HIDReceive receive(HIDPacket& packet, int timeout);
+		static HIDManager::HIDReceive receive(HIDPacket& packet, int timeout);
 		static int send(HIDPacket& packet, int timeout);
 	private:
-		HIDHandler() {}
+		HIDManager() {}
 };

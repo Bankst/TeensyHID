@@ -1,6 +1,6 @@
-#include "HIDHandler.h"
+#include "HIDManager.h"
 
-HIDHandler::HIDReceive HIDHandler::receive(HIDPacket& packet, int timeout)
+HIDManager::HIDReceive HIDManager::receive(HIDPacket& packet, int timeout)
 {
 	byte buff[64];
 	bool valid = false;
@@ -10,10 +10,10 @@ HIDHandler::HIDReceive HIDHandler::receive(HIDPacket& packet, int timeout)
 		valid = (buff[0] < HIDOpcode::HIDOPCODE_LENGTH);	
 		packet = HIDPacket(buff);
 	}
-	return HIDHandler::HIDReceive(valid, n);
+	return HIDManager::HIDReceive(valid, n);
 }
 
-int HIDHandler::send(HIDPacket& packet, int timeout)
+int HIDManager::send(HIDPacket& packet, int timeout)
 {
 	return RawHID.send(packet, timeout);
 }
