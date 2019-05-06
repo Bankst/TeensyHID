@@ -49,21 +49,21 @@ namespace TeensyHID.Comm
         {
             var mbo = e.NewEvent;
             var instance = (ManagementBaseObject)mbo["TargetInstance"];
-            var devPath = instance.Properties["Dependent"];
-            var toFind = @"HID\\VID_16C0";
-            var mobjDevices = new ManagementObjectSearcher($@"Select * From Win32_PnPEntity").Get();
-            var mobjDevice = from ManagementObject x in mobjDevices where x.Path.RelativePath.Contains("16C0") select x;
-//            var whatever = mobjDevice.Where(x => x.Contains(@"16C0"));
-            //            var changedDevice = new USBControllerDevice(devPath);
+            var devPath = instance.Properties["Dependent"].Value.ToString();
+			var mPath = new ManagementPath(devPath);
+			const string strDeviceName = @"HID\\VID_16C0&PID_0486&MI_00\\7&10759692&0&0000";
+			var pnpEntity = $"Select * From Win32_PnPEntity Where DeviceID like '%{strDeviceName}%'";
+			var mObjs = new ManagementObjectSearcher(pnpEntity).Get();
+			
             var isCreationEvent = mbo.ClassPath.ClassName == "__InstanceCreationEvent";
-            var vid = instance;
-//            var changedDevice;
 
 
             if (isCreationEvent)
             {
-                Debug.Log("New device inserted.");
-                InsertEvent.Invoke(sender, e);
+				if (mObjs.Count == 1)
+				{
+					InsertEvent.Invoke(sender, e);
+                }
             }
             else
             {

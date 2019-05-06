@@ -25,7 +25,7 @@ namespace TeensyHID.Comm
 			Device = device;
 			_receiveStream = new MemoryStream();
 			_receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
-			Device.DataReceived += DeviceOnDataReceived;
+			// Device.DataReceived += DeviceOnDataReceived;
 
 			new MSG_INIT().Send(this);
 		}
