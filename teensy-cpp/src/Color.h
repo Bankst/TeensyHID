@@ -1,5 +1,6 @@
-#ifndef _COLOR_H
-#define _COLOR_H
+#ifndef COLOR_H
+#define COLOR_H
+
 
 #include <stdint.h>
 
@@ -23,4 +24,4 @@ struct Color
      uint8_t a;
 };
 
-#endif
+#endif /* COLOR_H */

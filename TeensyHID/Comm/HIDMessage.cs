@@ -1,34 +1,49 @@
 ﻿using System;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
+using System.Linq;
 using System.Text;
 
 namespace TeensyHID.Comm
 {
+    [SuppressMessage("ReSharper", "UnusedMember.Global")]
     public class HIDMessage : Object
     {
         public HIDOpcode Opcode { get; }
 
-        private readonly BinaryReader reader;
+        private readonly bool _largeMessage;
 
-        private readonly MemoryStream stream;
+        private const ushort HeaderByteCount = 2;
+        public const ushort MaxSmallMessageLength = 64;
+        public const ushort MaxLargeMessageLength = 512;
 
-        private readonly BinaryWriter writer;
+        private readonly BinaryReader _reader;
+
+        private readonly MemoryStream _stream;
+
+        private readonly BinaryWriter _writer;
 
         public HIDMessage(byte[] buffer)
         {
-            stream = new MemoryStream(buffer);
-            reader = new BinaryReader(stream);
+            _largeMessage = buffer.Length > MaxSmallMessageLength;
+            _stream = new MemoryStream(buffer);
+            _reader = new BinaryReader(_stream);
             Opcode = (HIDOpcode)ReadByte();
         }
 
-        public HIDMessage(HIDOpcode opcode)
+        public HIDMessage(HIDOpcode opcode, bool largeMessage = false)
         {
-            stream = new MemoryStream();
-            writer = new BinaryWriter(stream);
+            _largeMessage = largeMessage;
+            _stream = new MemoryStream(largeMessage ? MaxLargeMessageLength : MaxSmallMessageLength);
+
+            _writer = new BinaryWriter(_stream);
             Opcode = opcode;
 
             Write((byte)opcode);
+            Write((byte)0); // placeholder for packetCount byte
         }
+
+        public int RemainingSpace() => _stream.Capacity - (int)_stream.Length;
 
         /// <summary>
         /// Fills the number of bytes with the value.
@@ -37,7 +52,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to fill with.</param>
         public void Fill(int count, byte value)
         {
-            if (count > 63) count = 63;
+            count = DataLengthClip(count);
             for (var i = 0; i < count; i++)
             {
                 Write(value);
@@ -49,7 +64,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public bool ReadBoolean()
         {
-            return reader.ReadBoolean();
+            return _reader.ReadBoolean();
         }
 
         /// <summary>
@@ -57,7 +72,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public byte ReadByte()
         {
-            return reader.ReadByte();
+            return _reader.ReadByte();
         }
 
         /// <summary>
@@ -66,7 +81,7 @@ namespace TeensyHID.Comm
         /// <param name="count">The number of bytes to read.</param>
         public byte[] ReadBytes(int count)
         {
-            return reader.ReadBytes(count);
+            return _reader.ReadBytes(count);
         }
 
         /// <summary>
@@ -74,7 +89,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public char ReadChar()
         {
-            return reader.ReadChar();
+            return _reader.ReadChar();
         }
 
         /// <summary>
@@ -82,7 +97,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public decimal ReadDecimal()
         {
-            return reader.ReadDecimal();
+            return _reader.ReadDecimal();
         }
 
         /// <summary>
@@ -90,7 +105,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public double ReadDouble()
         {
-            return reader.ReadDouble();
+            return _reader.ReadDouble();
         }
 
         /// <summary>
@@ -98,7 +113,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public short ReadInt16()
         {
-            return reader.ReadInt16();
+            return _reader.ReadInt16();
         }
 
         /// <summary>
@@ -106,7 +121,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public int ReadInt32()
         {
-            return reader.ReadInt32();
+            return _reader.ReadInt32();
         }
 
         /// <summary>
@@ -115,7 +130,7 @@ namespace TeensyHID.Comm
         /// <returns></returns>
         public long ReadInt64()
         {
-            return reader.ReadInt64();
+            return _reader.ReadInt64();
         }
 
         /// <summary>
@@ -124,7 +139,7 @@ namespace TeensyHID.Comm
         /// <returns></returns>
         public float ReadSingle()
         {
-            return reader.ReadSingle();
+            return _reader.ReadSingle();
         }
 
         /// <summary>
@@ -141,12 +156,12 @@ namespace TeensyHID.Comm
         /// <param name="length">The length of the stream.</param>
         public string ReadString(int length)
         {
-            if (length > 63) length = 63;
+            length = DataLengthClip(length);
             var ret = string.Empty;
             var buffer = new byte[length];
             var count = 0;
 
-            stream.Read(buffer, 0, buffer.Length);
+            _stream.Read(buffer, 0, buffer.Length);
 
             if (buffer[length - 1] != 0)
             {
@@ -173,7 +188,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public ushort ReadUInt16()
         {
-            return reader.ReadUInt16();
+            return _reader.ReadUInt16();
         }
 
         /// <summary>
@@ -181,7 +196,7 @@ namespace TeensyHID.Comm
         /// </summary>
         public uint ReadUInt32()
         {
-            return reader.ReadUInt32();
+            return _reader.ReadUInt32();
         }
 
         /// <summary>
@@ -189,44 +204,51 @@ namespace TeensyHID.Comm
         /// </summary>
         public ulong ReadUInt64()
         {
-            return reader.ReadUInt64();
+            return _reader.ReadUInt64();
         }
 
-		// <summary>
-		/// Sends the message to the connection.
-		/// </summary>
-		/// <param name="connection">The connection to send the message to.</param>
-		public void Send(HIDConnection connection)
-		{
-			connection?.SendData(ToArray(connection));
-			Destroy(this);
-		}
+        /// <summary>
+        /// Sends the message to the connection.
+        /// </summary>
+        /// <param name="connection">The connection to send the message to.</param>
+        public void Send(HIDConnection connection)
+        {
+            connection?.SendData(ToArray(connection));
+            Destroy(this);
+        }
 
-		/// <summary>
-		/// Returns a byte array representing the message.
-		/// </summary>
-		/// <returns></returns>
-		public byte[] ToArray(HIDConnection connection = null)
-		{
-			byte[] ret;
-			var buffer = stream.ToArray();
+        /// <summary>
+        /// Returns a byte array representing the message.
+        /// </summary>
+        /// <returns></returns>
+        public byte[] ToArray(HIDConnection connection = null)
+        {
+            var buffer = _stream.ToArray();
+            Array.Resize(ref buffer, MaxLargeMessageLength);
 
-			Array.Resize(ref buffer, 63);
+            var dataLength = buffer.Length - HeaderByteCount;
 
-			ret = new byte[buffer.Length + 1];
+            // forces rounding-up of the count
+            var pktCount = (byte) ((buffer.Length + MaxSmallMessageLength - 1) / MaxSmallMessageLength);
 
-			Buffer.BlockCopy(buffer, 0, ret, 1, buffer.Length);
-			ret[0] = (byte) Opcode;
+            var dataBytes = buffer.Skip(HeaderByteCount).Take(dataLength).ToArray();
+            Array.Resize(ref dataBytes, DataLengthClip(dataLength));
 
-			return ret;
-		}
+            var ret = new byte[buffer.Length];
+            Buffer.BlockCopy(buffer, 0, ret, HeaderByteCount, buffer.Length - HeaderByteCount);
+            
+            buffer[1] = pktCount;
 
+            return buffer;
+        }
+
+        /// <inheritdoc />
         /// <summary>
         /// Returns a string representing the message.
         /// </summary>
         public override string ToString()
         {
-            return $"Command=0x{Opcode:X} ({Opcode}), Length={stream.Length - 1}";
+            return $"Command=0x{Opcode:X} ({Opcode}), Length={_stream.Length}";
         }
 
         /// <summary>
@@ -235,7 +257,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(bool value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -244,7 +266,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(byte value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -253,7 +275,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(sbyte value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -262,7 +284,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(byte[] value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -271,7 +293,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(short value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -280,7 +302,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(int value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -289,7 +311,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(long value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -298,7 +320,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(ushort value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -307,7 +329,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(uint value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -316,7 +338,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(ulong value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -325,7 +347,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(double value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -334,7 +356,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(decimal value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -343,7 +365,7 @@ namespace TeensyHID.Comm
         /// <param name="value">The value to write.</param>
         public void Write(float value)
         {
-            writer.Write(value);
+            _writer.Write(value);
         }
 
         /// <summary>
@@ -362,7 +384,7 @@ namespace TeensyHID.Comm
         /// <param name="length">The length of the string.</param>
         public void Write(string value, int length)
         {
-            if (length > 63) length = 63;
+            length = DataLengthClip(length);
             var buffer = Encoding.ASCII.GetBytes(value);
 
             Write(buffer);
@@ -373,13 +395,19 @@ namespace TeensyHID.Comm
             }
         }
 
-		protected override void Destroy()
-		{
-			// Reader and writer are not always initialized, so we need to check
-			// for null before attempting to close them.
-			reader?.Close();
-			writer?.Close();
-			stream.Close();
+        private int DataLengthClip(int length)
+        {
+            var maxDataLength = (_largeMessage ? MaxLargeMessageLength : MaxSmallMessageLength);
+            return length > maxDataLength ? maxDataLength : length;
+        }
+
+        protected override void Destroy()
+        {
+            // Reader and writer are not always initialized, so we need to check
+            // for null before attempting to close them.
+            _reader?.Close();
+            _writer?.Close();
+            _stream.Close();
         }
     }
 }

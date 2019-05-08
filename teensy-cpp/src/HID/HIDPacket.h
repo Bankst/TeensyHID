@@ -1,15 +1,16 @@
-#ifndef _HIDPACKET_h
-#define _HIDPACKET_h
+#ifndef HIDPACKET_H
+#define HIDPACKET_H
 
-#include <array>
+#include <vector>
 
 #include "HIDOpcode.h"
 
 class HIDPacket {
 	public:
 		HIDPacket();
-		HIDPacket(byte rawdata[]);
-		HIDPacket(HIDOpcode opcode, byte newdata[]);
+		HIDPacket(uint8_t rawdata[]);
+		HIDPacket(HIDOpcode opcode);
+		HIDPacket(HIDOpcode opcode, uint8_t newdata[]);
 		HIDPacket(HIDOpcode opcode, const char* newdata) : HIDPacket(opcode, (unsigned char*)newdata) {};
 
 		HIDPacket& operator= (const HIDPacket& p);
@@ -18,10 +19,10 @@ class HIDPacket {
 		HIDOpcode const getOpcode();
 		const char* getOpcodeName();
 		char* getData();
-		byte* getBuffer();
+		uint8_t* getBuffer();
 	private:
 		HIDOpcode opcode;
-		std::array<unsigned char, 63> data;
+		std::vector<unsigned char> data;
 };
 
-#endif
+#endif /* HIDPACKET_H */

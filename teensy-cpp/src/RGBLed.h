@@ -1,5 +1,5 @@
-#ifndef _RGBLED_H
-#define _RGBLED_H
+#ifndef RGBLED_H
+#define RGBLED_H
 
 #include <Arduino.h>
 #include "Color.h"
@@ -17,4 +17,5 @@ class RGBLed {
 	void setOutputs(uint8_t red, uint8_t green, uint8_t blue);
 };
 
-#endif
+
+#endif /* RGBLED_H */

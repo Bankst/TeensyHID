@@ -29,8 +29,8 @@ namespace TeensyHID
 			}
 
 			// Only sub to events after initial scan
-			TeensyHID.Inserted += TeensyHID_Inserted;
-			TeensyHID.Removed += TeensyHID_Removed;
+			Comm.TeensyHID.Inserted += TeensyHID_Inserted;
+			Comm.TeensyHID.Removed += TeensyHID_Removed;
 
             Console.ReadLine();
 		}
@@ -47,7 +47,7 @@ namespace TeensyHID
         private static void TeensyHID_Inserted(HidDevice device)
 		{
 			var addedSerial = device.Serial;
-			var newConnection = new HIDConnection(new TeensyHID(device));
+			var newConnection = new HIDConnection(new Comm.TeensyHID(device));
 			if (TeensyConnections.TryAdd(addedSerial, newConnection))
 			{
 				Debug.Log($"Added device: {device}");
@@ -56,7 +56,7 @@ namespace TeensyHID
 
 		private static void AddDevice(HidDevice device)
 		{
-			var teensyHid = new TeensyHID(device);
+			var teensyHid = new Comm.TeensyHID(device);
 			var teensyConnection = new HIDConnection(teensyHid);
 
 			if (!teensyConnection.IsConnected) return;
@@ -79,7 +79,7 @@ namespace TeensyHID
 
 		private static List<HidDevice> EnumerateTeensyHIDDevices()
 		{
-			return HidDevices.Enumerate(TeensyHID.VendorId, TeensyHID.ProductId, TeensyHID.UsagePage).ToList();
+			return HidDevices.Enumerate(Comm.TeensyHID.VendorId, Comm.TeensyHID.ProductId, Comm.TeensyHID.UsagePage).ToList();
         }
 	}
 }

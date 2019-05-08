@@ -1,0 +1,12 @@
+syntax = "proto2";
+
+package teensyhid;
+
+enum HidOpcode {
+	INIT = 0;
+	INIT_ACK = 1;
+	HEARTBEAT = 2;
+	HEARTBEAT_ACK = 3;
+	LOOP_DATA = 4;
+	LOOP_DATA_ACK = 5;
+}

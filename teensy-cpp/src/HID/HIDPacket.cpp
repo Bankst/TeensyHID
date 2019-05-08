@@ -12,7 +12,7 @@ HIDPacket& HIDPacket::operator= (const HIDPacket& p) {
 	return *this;
 }
 
-HIDPacket::HIDPacket(byte rawdata[]) {
+HIDPacket::HIDPacket(uint8_t rawdata[]) {
 	opcode =  static_cast<HIDOpcode>(rawdata[0]);
 	std::copy(rawdata, rawdata + data.size(), data.begin());
 }
@@ -26,12 +26,12 @@ HIDOpcode const HIDPacket::getOpcode() {
 	return opcode;
 }
 
-byte* HIDPacket::getBuffer() {
+uint8_t* HIDPacket::getBuffer() {
 	return 0;
 }
 
 const char* HIDPacket::getOpcodeName() {
-	return HIDOpcodeNames[static_cast<byte>(opcode)];
+	return HIDOpcodeNames[static_cast<uint8_t>(opcode)];
 }
 
 char* HIDPacket::getData() {

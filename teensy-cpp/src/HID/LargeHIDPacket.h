@@ -1,0 +1,6 @@
+#ifndef LARGEHIDPACKET_H
+#define LARGEHIDPACKET_H
+
+
+
+#endif /* LARGEHIDPACKET_H */

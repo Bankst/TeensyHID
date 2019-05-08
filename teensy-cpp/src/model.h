@@ -1,5 +1,5 @@
-#ifndef _MODEL_H
-#define _MODEL_H
+#ifndef MODEL_H
+#define MODEL_H
 
 #if defined (__MKL26Z64__)
 #define TEENSY_MODEL 'LC'
@@ -13,4 +13,4 @@
 #define TEENSY_MODEL '36'
 #endif
 
-#endif
+#endif /* MODEL_H */

@@ -2,8 +2,8 @@
 {
     public enum HIDOpcode
     {
-        OK,
-        FAIL,
+        NULL,
+        MESSAGE_ACK,
         INIT,
         INIT_ACK,
         HEARTBEAT,

@@ -1,5 +1,6 @@
-#ifndef _ARDPRINTF_H
-#define _ARDPRINTF_H
+#ifndef ARDPRINTF_H
+#define ARDPRINTF_H
+
 #define ARDBUFFER 16
 #include <stdarg.h>
 #include <Arduino.h>
@@ -59,4 +60,5 @@ int ardprintf(const char *str, ...)
 	return size + 1;
 }
 #undef ARDBUFFER
-#endif
+
+#endif /* ARDPRINTF_H */

@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading;
 using TeensyHID.HID;
 
-namespace TeensyHID
+namespace TeensyHID.Comm
 {
 	public class TeensyHID : IDisposable
 	{
@@ -11,11 +14,11 @@ namespace TeensyHID
 
 		public static event InsertedEventHandler Inserted;
 		public static event RemovedEventHandler Removed;
-		public static event DataReceivedEventHandler DataReceived;
+//        public static event DataReceivedEventHandler DataReceived;
 
 		public delegate void InsertedEventHandler(HidDevice device);
 		public delegate void RemovedEventHandler(HidDevice device);
-		public delegate void DataReceivedEventHandler(byte[] data);
+//		public delegate void DataReceivedEventHandler(byte[] data);
 
 		private readonly HidDevice _teensyHID;
 
@@ -38,13 +41,44 @@ namespace TeensyHID
         public string Serial => _teensyHID.Serial;
 
 		public void SendData(byte[] buffer)
-		{
-			var report = _teensyHID.CreateReport();
+        {
+            var buffers = new List<byte[]>();
+            // forces rounding-up of the count
+            var pktCount = (buffer.Length + HIDMessage.MaxSmallMessageLength - 1)/ HIDMessage.MaxSmallMessageLength;
 
-			report.ReportId = 0x00; // TODO: maybe right?
-			report.Data = buffer;
+            for (var i = 0; i < pktCount; i++)
+            {
+                var splitBuf = buffer.Skip(i * HIDMessage.MaxSmallMessageLength).Take(HIDMessage.MaxSmallMessageLength).ToArray();
+                buffers.Add(splitBuf);
+            }
 
-			_teensyHID.WriteReport(report);
+            var goodPacketTx = 0;
+            var done = false;
+
+            while (!done)
+            {
+                for (var i = 0; i < pktCount; i++)
+                {
+                    var report = _teensyHID.CreateReport();
+                    report.ReportId = 0x00;
+                    report.Data = buffers[i];
+
+                    var sent = _teensyHID.WriteReport(report);
+                    Debug.Log(sent ? $"Sent Packet {i+1} of {pktCount}." : "NotSent");
+
+                    // blocking to wait for message ack
+                    var gotAck = false;
+                    while (!gotAck)
+                    {
+                        report = _teensyHID.ReadReport(15); 
+                        gotAck = new HIDMessage(report.Data).Opcode == HIDOpcode.MESSAGE_ACK;
+                    }
+                    Debug.Log($"Got Ack {i+1} of {pktCount}.");
+                    goodPacketTx = i + 1;
+                    Thread.Sleep(15);
+                }
+                done = goodPacketTx >= 8;
+            }
 		}
 
 		private static void TeensyHID_Inserted(IHidDevice hidDevice)

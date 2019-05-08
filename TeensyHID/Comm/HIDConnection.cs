@@ -27,7 +27,9 @@ namespace TeensyHID.Comm
 			_receiveBuffer = new byte[RECEIVE_BUFFER_SIZE];
 			// Device.DataReceived += DeviceOnDataReceived;
 
-			new MSG_INIT().Send(this);
+			//new MSG_INIT().Send(this);
+            //TEST ONLY!!
+            new MSG_LOOP_DATA().Send(this);
 		}
 
 		private void DeviceOnDataReceived(byte[] data)

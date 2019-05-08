@@ -1,0 +1,17 @@
+syntax = "proto2";
+
+package teensyhid;
+
+import "opcodes.proto";
+
+message LoopData {
+	required HidOpcode opcode = 1 [default = LOOP_DATA];
+	required uint32 millis = 2;
+	optional bool time_resp = 3;
+}
+
+message InitAck {
+	required HidOpcode opcode = 1 [default = LOOP_DATA_ACK];
+	required string model = 2;
+	optional uint32 millis = 3;
+}

@@ -1,0 +1,13 @@
+syntax = "proto2";
+
+package teensyhid;
+
+import "opcodes.proto";
+
+message Heartbeat {
+	required HidOpcode opcode = 1 [default = HEARTBEAT];
+}
+
+message HeartbeatAck {
+	required HidOpcode opcode = 1 [default = HEARTBEAT_ACK];
+}

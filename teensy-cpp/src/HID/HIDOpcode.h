@@ -1,18 +1,16 @@
-#ifndef _HIDOPCODE_h
-#define _HIDOPCODE_h
+#ifndef HIDOPCODE_H
+#define HIDOPCODE_H
 
-#include <Arduino.h>
+static const char* const HIDOpcodeNames[] = {"NULL", "INIT", "INIT_OK", "HEARTBEAT", "HEARTBEAT_OK" };
 
-static const char* const HIDOpcodeNames[] = {"OK", "FAIL", "INIT", "INIT_OK", "HEARTBEAT", "HEARTBEAT_OK" };
-
-enum HIDOpcode : byte {
-	OK,
-	FAIL,
+enum HIDOpcode : uint8_t {
+	NULL_,
+	MESSAGE_ACK,
 	INIT,
 	INIT_OK,
 	HEARTBEAT,
-	HEARTBEAT_OK, 
+	HEARTBEAT_OK, 	
 	HIDOPCODE_LENGTH
 };
 
-#endif
+#endif /* HIDOPCODE_H */

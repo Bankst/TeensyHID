@@ -2,10 +2,12 @@
 #include <TeensyThreads.h>
 
 #include "ardprintf.h"
+#include "ardtrace.h"
 #include "build_defs.h"
 #include "Color.h"
 #include "HID\HIDOpcode.h"
 #include "HID\HIDPacket.h"
+#include "HID\HIDMessages.h"
 #include "HID\HIDManager.h"
 #include "model.h"
 #include "RGBLed.h"
@@ -74,17 +76,31 @@ void ledOff(int led)
 	digitalWriteFast(led, LOW);
 }
 
+void largeRX() {
+	std::vector<unsigned char> buff;
+	HIDManager::HIDReceive rx = HIDManager::receiveLarge(buff, 0);
+	isRx = rx.len > 0;
+	// if (isRx) {
+	// 	TRACE();
+	// 	bool isLarge = rx.len > 64;
+	// 	ardprintf("Got %s packet, size: %i", isLarge ? "large" : "normal", rx.len);
+	// }
+}
+
 void hidThread()
 {
 	while (1)
 	{
-		HIDManager::HIDReceive rx = HIDManager::receive(lastRXPacket, 0);
-		isRx = rx.len > 0;
-		if (isRx) {
-			printRXPacket(rx.valid);
-			Serial.println("Got valid packet!");
-		}
-		HIDManager::handle(lastRXPacket);
+		largeRX();
+
+
+		// HIDManager::HIDReceive rx = HIDManager::receive(lastRXPacket, 0);
+		// isRx = rx.len > 0;
+		// if (isRx) {
+			// printRXPacket(rx.valid);
+			// Serial.println("Got valid packet!");
+		// }
+		// HIDManager::handle(lastRXPacket);
 		// if (rx.valid)
 		// {			
 		// 	HIDOpcode newOpcode = static_cast<HIDOpcode>(lastRXPacket.getOpcode() + 1);
@@ -108,6 +124,7 @@ void statusThread()
 		threads.delay(STATUS_BLINK_MS);
 		ledOff(STATUS_LED);
 		threads.delay(STATUS_DELAY_BLINK_MS);
+		TRACE();
 	}
 	threads.yield();
 }
