@@ -1,11 +1,16 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 15
-VisualStudioVersion = 15.0.28307.136
+# Visual Studio Version 16
+VisualStudioVersion = 16.0.28803.352
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeensyHID", "TeensyHID\TeensyHID.csproj", "{C52CA070-9E90-41A9-895B-A433C2CCB91F}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeensyHIDConsole", "TeensyHIDConsole\TeensyHIDConsole.csproj", "{C52CA070-9E90-41A9-895B-A433C2CCB91F}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "TeensyHIDTest", "TeensyHIDTest\TeensyHIDTest.csproj", "{17835281-209C-4FD9-B895-29D9822ADA08}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeensyHIDWindows", "TeensyHIDWindows\TeensyHIDWindows.csproj", "{7B8A82A2-1A57-42D9-BC7A-D3A1AE6C11E6}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "TeensyHIDGUI", "TeensyHIDGUI\TeensyHIDGUI.csproj", "{4ADD420B-308F-4D67-A27E-39213E99172A}"
+	ProjectSection(ProjectDependencies) = postProject
+		{7B8A82A2-1A57-42D9-BC7A-D3A1AE6C11E6} = {7B8A82A2-1A57-42D9-BC7A-D3A1AE6C11E6}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -17,10 +22,14 @@ Global
 		{C52CA070-9E90-41A9-895B-A433C2CCB91F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C52CA070-9E90-41A9-895B-A433C2CCB91F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C52CA070-9E90-41A9-895B-A433C2CCB91F}.Release|Any CPU.Build.0 = Release|Any CPU
-		{17835281-209C-4FD9-B895-29D9822ADA08}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{17835281-209C-4FD9-B895-29D9822ADA08}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{17835281-209C-4FD9-B895-29D9822ADA08}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{17835281-209C-4FD9-B895-29D9822ADA08}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7B8A82A2-1A57-42D9-BC7A-D3A1AE6C11E6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7B8A82A2-1A57-42D9-BC7A-D3A1AE6C11E6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7B8A82A2-1A57-42D9-BC7A-D3A1AE6C11E6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7B8A82A2-1A57-42D9-BC7A-D3A1AE6C11E6}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4ADD420B-308F-4D67-A27E-39213E99172A}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4ADD420B-308F-4D67-A27E-39213E99172A}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4ADD420B-308F-4D67-A27E-39213E99172A}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4ADD420B-308F-4D67-A27E-39213E99172A}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

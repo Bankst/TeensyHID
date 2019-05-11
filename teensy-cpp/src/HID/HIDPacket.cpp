@@ -1,5 +1,6 @@
 #include <array>
 #include <iterator>
+#include <vector>
 
 #include "HIDPacket.h"
 
@@ -13,13 +14,13 @@ HIDPacket& HIDPacket::operator= (const HIDPacket& p) {
 }
 
 HIDPacket::HIDPacket(uint8_t rawdata[]) {
-	opcode =  static_cast<HIDOpcode>(rawdata[0]);
-	std::copy(rawdata, rawdata + data.size(), data.begin());
+	opcode = static_cast<HIDOpcode>(rawdata[0]);
+	data.assign(rawdata + 2, rawdata + 62);
 }
 
-HIDPacket::HIDPacket(HIDOpcode opcode, unsigned char newdata[]) {
+HIDPacket::HIDPacket(HIDOpcode opcode, uint8_t newdata[]) {
 	this->opcode = opcode;
-	std::copy(newdata, newdata + data.size(), data.begin());
+	data.assign(newdata, newdata + sizeof(newdata));
 }
 
 HIDOpcode const HIDPacket::getOpcode() {
@@ -38,9 +39,10 @@ char* HIDPacket::getData() {
 	return reinterpret_cast<char*>(&data);
 }
 
-HIDPacket::operator unsigned char*() {
-	unsigned char tempData[64];
-	tempData[0] = (unsigned char)opcode;
+HIDPacket::operator uint8_t*() {
+	uint8_t tempData[64];
+	tempData[0] = (uint8_t)opcode;
+	tempData[1] = 1;
 	std::copy(std::begin(data), std::end(data), std::begin(tempData));
-	return (unsigned char*)tempData;
+	return (uint8_t*)tempData;
 }

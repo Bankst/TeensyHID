@@ -11,10 +11,12 @@ class HIDPacket {
 		HIDPacket(uint8_t rawdata[]);
 		HIDPacket(HIDOpcode opcode);
 		HIDPacket(HIDOpcode opcode, uint8_t newdata[]);
-		HIDPacket(HIDOpcode opcode, const char* newdata) : HIDPacket(opcode, (unsigned char*)newdata) {};
+		HIDPacket(HIDOpcode opcode, const char* newdata) : HIDPacket(opcode, (uint8_t*)newdata) {};
+
+		static const uint8_t PacketLength = 64;
 
 		HIDPacket& operator= (const HIDPacket& p);
-		operator unsigned char*();
+		operator uint8_t*();
 
 		HIDOpcode const getOpcode();
 		const char* getOpcodeName();
@@ -22,7 +24,8 @@ class HIDPacket {
 		uint8_t* getBuffer();
 	private:
 		HIDOpcode opcode;
-		std::vector<unsigned char> data;
+		uint8_t packetCount;
+		std::vector<uint8_t> data;
 };
 
 #endif /* HIDPACKET_H */

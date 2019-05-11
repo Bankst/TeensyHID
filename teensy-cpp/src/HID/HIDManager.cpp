@@ -19,7 +19,8 @@ HIDManager::HIDReceive HIDManager::receive(HIDPacket& packet, int timeout)
 
 int HIDManager::send(HIDPacket& packet, int timeout)
 {
-	return RawHID.send(packet, timeout);
+	return 0;
+	//return RawHID.send(packet, timeout);
 }
 
 void HIDManager::handle(HIDPacket& packet) {
@@ -50,16 +51,16 @@ HIDManager::HIDReceive HIDManager::receiveLarge(std::vector<unsigned char> buffe
 	if (pktCount == 1) {
 		return HIDManager::HIDReceive(valid, pktCount);
 	} else if (pktCount <= 8) {
-		for (int i = 0; i < pktCount - 1; i++) {			
-			DUMP(i);
-			bool got;
-			while (!got)  {
-				n = RawHID.recv(buff, timeout + 150);	
-				got = n > 0;
-			}
-			if (got && i != pktCount) largeAck();
-			DUMP(buff[1]);
-		}
+		// for (int i = 0; i < pktCount - 1; i++) {			
+		// 	DUMP(i);
+		// 	bool got;
+		// 	while (!got)  {
+		// 		n = RawHID.recv(buff, timeout + 150);	
+		// 		got = n > 0;
+		// 	}
+		// 	if (got && i != pktCount) largeAck();
+		// 	DUMP(buff[1]);
+		// }
 	}
 
 	// uint8_t fullBuff[pktCount * 64];

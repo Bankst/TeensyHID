@@ -1,0 +1,73 @@
+﻿<Window x:Class="TeensyHIDGUI.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:TeensyHIDGUI"
+        xmlns:tb="http://www.hardcodet.net/taskbar"
+        mc:Ignorable="d"
+        Title="MainWindow" Height="450" Width="800" StateChanged="Window_StateChanged" Closing="Window_Closing">
+    <Grid>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="80"/>
+            <ColumnDefinition Width="80"/>
+        </Grid.ColumnDefinitions>
+        <Grid.RowDefinitions>
+            <RowDefinition x:Name="ConnectionRow" Height="80"/>
+            <RowDefinition Height="*"/>
+        </Grid.RowDefinitions>
+
+        <tb:TaskbarIcon x:Name="TaskbarIcon" ToolTipText="Hello World!" IconSource="/Resources/NotReady.ico" Visibility="Collapsed" TrayMouseDoubleClick="TaskbarIcon_TrayMouseDoubleClick" MenuActivation="LeftOrRightClick">
+            <tb:TaskbarIcon.ContextMenu>
+                <ContextMenu>
+                    <MenuItem Header="First Menu Item" />
+                    <MenuItem Header="Second Menu Item" />
+                </ContextMenu>
+            </tb:TaskbarIcon.ContextMenu>
+        </tb:TaskbarIcon>
+
+        <ComboBox Grid.Row="0" Grid.Column="0" HorizontalAlignment="Center" Margin="0,20,0,0" VerticalAlignment="Center" Width="160"/>
+        <Label Grid.Row="0" Grid.Column="0" x:Name="DeviceSelectorLabel" Content="Devices" HorizontalAlignment="Center" VerticalAlignment="Top" Margin="0"/>
+
+        <Rectangle Grid.Row="0" Grid.Column="1" x:Name="ConnectionIndicatorRectOld" Fill="Red" HorizontalAlignment="Center" Height="45" Width="45" Stroke="Black" Margin="0,10,0,0" VerticalAlignment="Center" />
+        <Label x:Name="ConnectionIndicatorLabel" Grid.Row="0" Grid.Column="1" HorizontalContentAlignment="Center" HorizontalAlignment="Center" Margin="0,0,0,5" VerticalAlignment="Top" Content="Connected"/>
+        <TabControl HorizontalAlignment="Left" Height="277" Margin="10,10,-338,0" VerticalAlignment="Top" Width="772" Grid.Row="1" Grid.ColumnSpan="4">
+            <TabItem Header="TabItem" Margin="-2,-2,-2,0">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+            <TabItem Header="TabItem">
+                <Grid Background="#FFE5E5E5"/>
+            </TabItem>
+        </TabControl>
+        <StatusBar Height="32" Margin="0,0,-348,0" VerticalAlignment="Bottom" Grid.ColumnSpan="4" Grid.Row="1" HorizontalAlignment="Center" Width="792" Grid.Column="0">
+            <StatusBar.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <Grid>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="*"/>
+                        </Grid.RowDefinitions>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="98"/>
+                            <ColumnDefinition Width="Auto"/>
+                            <ColumnDefinition Width="*"/>
+                            <ColumnDefinition Width="*"/>
+                        </Grid.ColumnDefinitions>
+                    </Grid>
+                </ItemsPanelTemplate>
+            </StatusBar.ItemsPanel>
+            <StatusBarItem Margin="10,0,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+                <Rectangle x:Name="ConnectionIndicatorRect" Fill="Red" Height="20" Width="20" Stroke="Black" />
+            </StatusBarItem>
+            <StatusBarItem HorizontalAlignment="Left" VerticalAlignment="Center" Grid.Column="1">
+                <Label Margin="0" Width="Auto" Height="Auto" HorizontalContentAlignment="Center">Not Connected</Label>
+            </StatusBarItem>
+            <Separator Grid.ColumnSpan="1" Grid.Column="2" HorizontalAlignment="Center" Margin="0"/>
+            <StatusBarItem Grid.Column="3">
+            </StatusBarItem>
+        </StatusBar>
+
+    </Grid>
+</Window>
